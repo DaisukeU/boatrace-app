@@ -1,29 +1,52 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 
-# CSVを読み込み
-@st.cache_data
-def load_data():
-    return pd.read_csv("ranked_patterns_total.csv", encoding="utf-8-sig")
+# 偏差値 → ランク変換
+def zscore_to_rank(z):
+    if z >= 61:
+        return 'S'
+    elif z >= 54:
+        return 'A'
+    elif z >= 47:
+        return 'B'
+    elif z >= 41:
+        return 'C'
+    else:
+        return 'D'
 
-df = load_data()
+# 勝率から偏差値ランクに変換
+def convert_to_rank(scores):
+    scores = np.array(scores, dtype=float)
+    scores = np.clip(scores, 3.0, None)  # 下限を3.0に固定
+    mean = scores.mean()
+    std = 1.35
+    zscores = (scores - mean) / std * 10 + 50
+    ranks = [zscore_to_rank(z) for z in zscores]
+    return ''.join(ranks)  # "-"なし
 
-st.title("ランク別 着順検索アプリ")
-st.write("例: SABCDD, AABCDD などを入力して検索してください")
+st.title("勝率からランクを計算して検索")
 
-# 入力ボックス
-query = st.text_input("組み合わせを入力", "")
+# 1～6コースの勝率を入力
+col1, col2, col3, col4, col5, col6 = st.columns(6)
+scores = [
+    col1.number_input("1コース", min_value=0.0, max_value=20.0, step=0.1),
+    col2.number_input("2コース", min_value=0.0, max_value=20.0, step=0.1),
+    col3.number_input("3コース", min_value=0.0, max_value=20.0, step=0.1),
+    col4.number_input("4コース", min_value=0.0, max_value=20.0, step=0.1),
+    col5.number_input("5コース", min_value=0.0, max_value=20.0, step=0.1),
+    col6.number_input("6コース", min_value=0.0, max_value=20.0, step=0.1),
+]
 
-if query:
-    query = query.strip().upper()  # 大文字に統一
-    result = df[df["組み合わせ"] == query]
+# 変換ボタン
+if st.button("ランク計算"):
+    rank_str = convert_to_rank(scores)
+    st.success(f"計算結果: {rank_str}")
 
+    # CSVから該当組み合わせを検索
+    df = pd.read_csv("ranked_patterns_total.csv", encoding="utf-8-sig")
+    result = df[df["組み合わせ"] == rank_str]
     if not result.empty:
-        st.success(f"結果: {query}")
         st.dataframe(result)
     else:
         st.warning("該当する組み合わせは見つかりませんでした。")
-
-# 全体データを表示するチェックボックス
-if st.checkbox("全データを表示"):
-    st.dataframe(df)
