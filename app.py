@@ -25,7 +25,8 @@ def convert_to_rank(scores):
     ranks = [zscore_to_rank(z) for z in zscores]
     return ''.join(ranks)  # "-"なし
 
-st.title("勝率からランクを計算して検索")
+st.title("競艇順位予想")
+st.header("コース順の勝率を入力してね")
 
 # 1～6コースの勝率を入力
 col1, col2, col3, col4, col5, col6 = st.columns(6)
