@@ -43,7 +43,6 @@ scores = [
 # 変換ボタン
 if st.button("予想"):
     rank_str = convert_to_rank(scores)
-    st.success(f"計算結果: {rank_str}")
 
     # CSVから該当組み合わせを検索
     df = pd.read_csv("ranked_patterns_total.csv", encoding="utf-8-sig")
