@@ -31,12 +31,12 @@ st.header("コース順の勝率を入力してね")
 # 1～6コースの勝率を入力
 col1, col2, col3, col4, col5, col6 = st.columns(6)
 scores = [
-    col1.number_input("1コース", min_value=0.0, max_value=20.0, step=0.3, value=5.0),
-    col2.number_input("2コース", min_value=0.0, max_value=20.0, step=0.3, value=5.0),
-    col3.number_input("3コース", min_value=0.0, max_value=20.0, step=0.3, value=5.0),
-    col4.number_input("4コース", min_value=0.0, max_value=20.0, step=0.3, value=5.0),
-    col5.number_input("5コース", min_value=0.0, max_value=20.0, step=0.3, value=5.0),
-    col6.number_input("6コース", min_value=0.0, max_value=20.0, step=0.3, value=5.0),
+    col1.number_input("1コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
+    col2.number_input("2コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
+    col3.number_input("3コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
+    col4.number_input("4コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
+    col5.number_input("5コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
+    col6.number_input("6コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
 ]
 
 
