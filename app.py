@@ -41,7 +41,7 @@ scores = [
 
 
 # 変換ボタン
-if st.button("ランク計算"):
+if st.button("予想"):
     rank_str = convert_to_rank(scores)
     st.success(f"計算結果: {rank_str}")
 
