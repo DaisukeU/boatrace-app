@@ -47,7 +47,7 @@ if st.button("ランク計算"):
 
     # CSVから該当組み合わせを検索
     df = pd.read_csv("ranked_patterns_total.csv", encoding="utf-8-sig")
-    result = df[df["偏差"] == rank_str]
+    result = df[df["偏差rank"] == rank_str]
     if not result.empty:
         st.dataframe(result)
     else:
