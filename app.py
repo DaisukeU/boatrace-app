@@ -44,6 +44,7 @@ for i in range(1, 7):
 # ------------------------------
 # 入力をクリアするボタン
 # ------------------------------
+cols = st.columns([1,6])  # 1:6の比率
 if st.button("入力をクリア"):
     for i in range(1, 7):
         st.session_state[f"score{i}"] = ""  # 空白にする
