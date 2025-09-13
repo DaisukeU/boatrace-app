@@ -2,11 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# 入力を消すボタン
-if st.button("入力をクリア"):
-    for key in ["score1", "score2", "score3", "score4", "score5", "score6"]:
-        st.session_state[key] = ""  # 空に戻す
-    st.rerun()  # 画面をリロードして反映
 
 # 偏差値 → ランク変換
 def zscore_to_rank(z):
@@ -30,6 +25,15 @@ def convert_to_rank(scores):
     zscores = (scores - mean) / std * 10 + 50
     ranks = [zscore_to_rank(z) for z in zscores]
     return ''.join(ranks)  # "-"なし
+
+st.title("競艇着順予想")
+st.header("コース別の勝率を入力してね")
+
+# 入力を消すボタン
+if st.button("入力をクリア"):
+    for key in ["score1", "score2", "score3", "score4", "score5", "score6"]:
+        st.session_state[key] = ""  # 空に戻す
+    st.rerun()  # 画面をリロードして反映
 
 # 1～6コースの勝率を入力
 col1, col2, col3, col4, col5, col6 = st.columns(6)
@@ -60,8 +64,6 @@ scores = [
 
 #st.write("入力結果:", scores)
 
-st.title("競艇着順予想")
-st.header("コース別の勝率を入力してね")
 
 # 変換ボタン
 if st.button("予想"):
