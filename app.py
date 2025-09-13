@@ -52,7 +52,7 @@ scores = [
     blank_number_input(col6, "6コース"),
 ]
 
-st.write("入力結果:", scores)
+#st.write("入力結果:", scores)
 
 st.title("競艇着順予想")
 st.header("コース別の勝率を入力してね")
