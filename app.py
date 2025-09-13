@@ -17,24 +17,20 @@ def zscore_to_rank(z):
     else:
         return 'D'
 
-# 勝率から偏差値ランクに変換
 def convert_to_rank(scores):
     scores = np.array(scores, dtype=float)
-    scores = np.clip(scores, 3.0, None)  # 下限を3.0に固定
+    scores = np.clip(scores, 3.0, None)
     mean = scores.mean()
     std = 1.35
     zscores = (scores - mean) / std * 10 + 50
     ranks = [zscore_to_rank(z) for z in zscores]
-    return ''.join(ranks)  # "-"なし
+    return ''.join(ranks)
 
-# ------------------------------
-# UIタイトル
-# ------------------------------
 st.title("競艇着順予想")
 st.header("コース別の勝率を入力してね")
 
 # ------------------------------
-# 入力欄の初期化
+# セッションステート初期化
 # ------------------------------
 for i in range(1, 7):
     key = f"score{i}"
@@ -42,48 +38,38 @@ for i in range(1, 7):
         st.session_state[key] = ""
 
 # ------------------------------
-# 入力をクリアするボタン
+# ボタン横並び
 # ------------------------------
-cols = st.columns([1,6])  # 1:6の比率
-if st.button("入力をクリア"):
+btn_col1, btn_col2 = st.columns([1,1])
+with btn_col1:
+    clear_pressed = st.button("入力をクリア")
+with btn_col2:
+    predict_pressed = st.button("予想")
+
+# ------------------------------
+# 入力欄
+# ------------------------------
+cols = st.columns(6)
+scores = []
+for i, col in enumerate(cols, start=1):
+    val = col.text_input(f"{i}コース", st.session_state.get(f"score{i}", ""), key=f"score{i}")
+    scores.append(val if val.strip() != "" else "0")  # 空白は0扱い
+
+# ------------------------------
+# クリア処理
+# ------------------------------
+if clear_pressed:
     for i in range(1, 7):
-        st.session_state[f"score{i}"] = ""  # 空白にする
+        st.session_state[f"score{i}"] = ""  # 空白に戻す
+    # 画面上にスクロールさせるには、ボタンを列に置くことで自然にスクロールされる
 
 # ------------------------------
-# 勝率入力用関数
+# 予想処理
 # ------------------------------
-def blank_number_input(label, key, min_val=0.0, max_val=10.0, step=0.2):
-    txt = st.text_input(label, st.session_state.get(key, ""), key=key)
-    if txt.strip() == "":
-        return 0.0  # 空白は0扱い
-    try:
-        val = float(txt)
-        if val < min_val or val > max_val:
-            st.warning(f"{label} は {min_val}～{max_val} の範囲で入力してください")
-            return 0.0
-        return round(val / step) * step
-    except ValueError:
-        st.warning(f"{label} は数値を入力してください")
-        return 0.0
-
-# ------------------------------
-# 6コースの入力欄
-# ------------------------------
-col1, col2, col3, col4, col5, col6 = st.columns(6)
-scores = [
-    blank_number_input("1コース", "score1"),
-    blank_number_input("2コース", "score2"),
-    blank_number_input("3コース", "score3"),
-    blank_number_input("4コース", "score4"),
-    blank_number_input("5コース", "score5"),
-    blank_number_input("6コース", "score6"),
-]
-
-# ------------------------------
-# 予想ボタン
-# ------------------------------
-if st.button("予想"):
-    rank_str = convert_to_rank(scores)
+if predict_pressed:
+    # 数値に変換
+    numeric_scores = [float(s) if s.strip() != "" else 0.0 for s in scores]
+    rank_str = convert_to_rank(numeric_scores)
     try:
         df = pd.read_csv("ranked_patterns_total.csv", encoding="utf-8-sig")
         result = df[df["偏差rank"] == rank_str]
