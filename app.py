@@ -2,6 +2,12 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+# 入力を消すボタン
+if st.button("入力をクリア"):
+    for key in ["score1", "score2", "score3", "score4", "score5", "score6"]:
+        st.session_state[key] = ""  # 空に戻す
+    st.experimental_rerun()  # 画面をリロードして反映
+
 # 偏差値 → ランク変換
 def zscore_to_rank(z):
     if z >= 61:
