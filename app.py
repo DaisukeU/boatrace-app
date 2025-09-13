@@ -25,20 +25,37 @@ def convert_to_rank(scores):
     ranks = [zscore_to_rank(z) for z in zscores]
     return ''.join(ranks)  # "-"なし
 
-st.title("競艇着順予想")
-st.header("コース別の勝率を入力してね")
-
 # 1～6コースの勝率を入力
 col1, col2, col3, col4, col5, col6 = st.columns(6)
+
+def blank_number_input(col, label, min_val=0.0, max_val=10.0, step=0.2):
+    txt = col.text_input(label, "")  # 初期値ブランク
+    if txt.strip() == "":
+        return 0.0  # 空白は0扱い
+    try:
+        val = float(txt)
+        # 範囲チェック
+        if val < min_val or val > max_val:
+            st.warning(f"{label} は {min_val}～{max_val} の範囲で入力してください")
+            return 0.0
+        return round(val / step) * step  # stepに丸める
+    except ValueError:
+        st.warning(f"{label} は数値を入力してください")
+        return 0.0
+
 scores = [
-    col1.number_input("1コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
-    col2.number_input("2コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
-    col3.number_input("3コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
-    col4.number_input("4コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
-    col5.number_input("5コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
-    col6.number_input("6コース", min_value=0.0, max_value=10.0, step=0.2, value=5.0),
+    blank_number_input(col1, "1コース"),
+    blank_number_input(col2, "2コース"),
+    blank_number_input(col3, "3コース"),
+    blank_number_input(col4, "4コース"),
+    blank_number_input(col5, "5コース"),
+    blank_number_input(col6, "6コース"),
 ]
 
+st.write("入力結果:", scores)
+
+st.title("競艇着順予想")
+st.header("コース別の勝率を入力してね")
 
 # 変換ボタン
 if st.button("予想"):
