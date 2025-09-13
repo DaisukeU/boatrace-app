@@ -2,9 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# ------------------------------
 # 偏差値 → ランク変換
-# ------------------------------
 def zscore_to_rank(z):
     if z >= 61:
         return 'S'
@@ -30,21 +28,12 @@ st.title("競艇着順予想")
 st.header("コース別の勝率を入力してね")
 
 # ------------------------------
-# セッションステート初期化
+# 入力欄の初期化
 # ------------------------------
 for i in range(1, 7):
     key = f"score{i}"
     if key not in st.session_state:
         st.session_state[key] = ""
-
-# ------------------------------
-# ボタン横並び
-# ------------------------------
-btn_col1, btn_col2 = st.columns([1,1])
-with btn_col1:
-    clear_pressed = st.button("入力をクリア")
-with btn_col2:
-    predict_pressed = st.button("予想")
 
 # ------------------------------
 # 入力欄
@@ -56,18 +45,22 @@ for i, col in enumerate(cols, start=1):
     scores.append(val if val.strip() != "" else "0")  # 空白は0扱い
 
 # ------------------------------
-# クリア処理
+# ボタン横並び
 # ------------------------------
-if clear_pressed:
-    for i in range(1, 7):
-        st.session_state[f"score{i}"] = ""  # 空白に戻す
-    # 画面上にスクロールさせるには、ボタンを列に置くことで自然にスクロールされる
+btn_col1, btn_col2 = st.columns([1,1])
+with btn_col1:
+    if st.button("入力をクリア"):
+        # セッションステートを空にして再読み込み
+        for i in range(1, 7):
+            st.session_state[f"score{i}"] = ""
+        st.experimental_rerun()  # 画面をリロードして最初の状態に戻す
+with btn_col2:
+    predict_pressed = st.button("予想")
 
 # ------------------------------
 # 予想処理
 # ------------------------------
 if predict_pressed:
-    # 数値に変換
     numeric_scores = [float(s) if s.strip() != "" else 0.0 for s in scores]
     rank_str = convert_to_rank(numeric_scores)
     try:
